@@ -1,34 +1,60 @@
-building_blocks = ['acacia_planks', 'acacia_slab', 'acacia_stairs', 'acacia_wood', 'andesite', 'andesite_slab',
-                   'andesite_stairs', 'andesite_wall', 'birch_planks', 'birch_slab', 'birch_stairs', 'birch_wood',
-                   'blackstone', 'blackstone_slab', 'blackstone_stairs', 'blackstone_wall', 'bricks', 'brick_slab',
-                   'brick_stairs', 'brick_wall', 'chiseled_nether_bricks', 'chiseled_polished_blackstone',
-                   'chiseled_quartz_block', 'chiseled_red_sandstone', 'chiseled_sandstone', 'chiseled_stone_bricks',
-                   'cobblestone', 'cobblestone_slab', 'cobblestone_stairs', 'cobblestone_wall', 'cracked_nether_bricks',
-                   'cracked_polished_blackstone_bricks', 'cracked_stone_bricks', 'crimson_planks', 'crimson_slab',
-                   'crimson_stairs', 'dark_oak_planks', 'dark_oak_slab', 'dark_oak_stairs', 'dark_oak_wood',
-                   'dark_prismarine', 'dark_prismarine_slab', 'dark_prismarine_stairs', 'diorite', 'diorite_slab',
-                   'diorite_stairs', 'diorite_wall', 'end_stone_bricks', 'end_stone_brick_slab',
-                   'end_stone_brick_stairs', 'end_stone_brick_wall', 'granite', 'granite_slab', 'granite_stairs',
-                   'granite_wall', 'jungle_planks', 'jungle_slab', 'jungle_stairs', 'jungle_wood', 'mossy_cobblestone',
-                   'mossy_cobblestone_slab', 'mossy_cobblestone_stairs', 'mossy_cobblestone_wall', 'mossy_stone_bricks',
-                   'mossy_stone_brick_slab', 'mossy_stone_brick_stairs', 'mossy_stone_brick_wall', 'nether_bricks',
-                   'nether_brick_fence', 'nether_brick_slab', 'nether_brick_stairs', 'nether_brick_wall', 'oak_planks',
-                   'oak_slab', 'oak_stairs', 'oak_wood', 'polished_andesite', 'polished_andesite_slab',
-                   'polished_andesite_stairs', 'polished_blackstone', 'polished_blackstone_brick_slab',
-                   'polished_blackstone_brick_stairs', 'polished_blackstone_brick_wall', 'polished_blackstone_bricks',
-                   'polished_blackstone_slab', 'polished_blackstone_stairs', 'polished_blackstone_wall',
-                   'polished_diorite', 'polished_diorite_slab', 'polished_diorite_stairs', 'polished_granite',
-                   'polished_granite_slab', 'polished_granite_stairs', 'prismarine', 'prismarine_brick_slab',
-                   'prismarine_brick_stairs', 'prismarine_bricks', 'prismarine_slab', 'prismarine_stairs',
-                   'prismarine_wall', 'purpur_block', 'purpur_pillar', 'purpur_slab', 'purpur_stairs', 'quartz_block',
-                   'quartz_bricks', 'quartz_pillar', 'quartz_slab', 'quartz_stairs', 'red_nether_bricks',
-                   'red_nether_brick_slab', 'red_nether_brick_stairs', 'red_nether_brick_wall', 'red_sandstone',
-                   'red_sandstone_slab', 'red_sandstone_stairs', 'red_sandstone_wall', 'sandstone', 'sandstone_slab',
-                   'sandstone_stairs', 'sandstone_wall', 'smooth_quartz', 'smooth_quartz_slab', 'smooth_quartz_stairs',
-                   'smooth_red_sandstone', 'smooth_red_sandstone_slab', 'smooth_red_sandstone_stairs',
-                   'smooth_sandstone', 'smooth_sandstone_slab', 'smooth_sandstone_stairs', 'smooth_stone',
-                   'smooth_stone_slab', 'spruce_planks', 'spruce_slab', 'spruce_stairs', 'spruce_wood', 'stone',
-                   'stone_bricks', 'stone_brick_slab', 'stone_brick_stairs', 'stone_brick_wall', 'stone_slab',
-                   'stone_stairs', 'stripped_acacia_wood', 'stripped_birch_wood', 'stripped_crimson_hyphae',
-                   'stripped_dark_oak_wood', 'stripped_jungle_wood', 'stripped_oak_wood', 'stripped_spruce_wood',
-                   'stripped_warped_hyphae', 'terracotta', 'warped_planks', 'warped_slab', 'warped_stairs']
+from typing import Any
+from math import floor
+
+import json
+
+import yaml
+
+
+def get_building_blocks() -> dict[str, dict[str, Any]]:
+    with open('building_blocks.json', 'r', encoding='utf-8') as f:
+        return json.loads(f.read())
+
+
+def main():
+    slot = 10
+    menu_index = 1
+
+    menu: dict = {
+        'open_command': f'shop_building_block_{menu_index}',
+        'size': 45,
+        'menu_title': f'Магазин строительных блоков // Страница {menu_index}',
+        'items': {}
+    }
+
+    for material, value in get_building_blocks().items():
+        name: str = value['name']
+        price: int = value['price']
+        menu['items'][material] = {
+            'material': material,
+            'display_name': f'&b{name}',
+            'slot': slot,
+            'lore': [
+                f'&7Купить ЛКМ за {price}₽',
+                f'&7Продать ПКМ за {floor(price / 2)}₽'
+            ]
+        }
+
+        slot += 1
+        if slot == 17:
+            slot = 19
+        elif slot == 26:
+            slot = 28
+        elif slot == 35:
+            with open(f'shop_building_blocks_{menu_index}.yml', 'w', encoding='utf-8') as file:
+                file.write(yaml.dump(menu))
+            menu_index += 1
+            slot = 10
+            menu: dict = {
+                'open_command': f'shop_building_block_{menu_index}',
+                'size': 45,
+                'menu_title': f'Магазин строительных блоков // Страница {menu_index}',
+                'items': {}
+            }
+    with open(f'shop_building_blocks_{menu_index}.yml', 'w', encoding='utf-8') as file:
+        file.write(yaml.dump(menu))
+
+
+
+if __name__ == '__main__':
+    main()
