@@ -6,16 +6,18 @@ import yaml
 
 
 class MenuBuilder:
-    def __init__(self, name: str, data: str, prefix: str):
+    def __init__(self, name: str, data: str, prefix: str, folder: str):
         """
         Создание экземпляра меню
         :param name: Отображаемое название с заменой %page% на номер страницы, а %pages% на кол-во страниц.
         :param data: Имя файла с параметрами.
         :param prefix: Префикс для файла с заменой %page% на номер страницы.
+        :param folder: Папка, в которую будут сохранены меню.
         """
         self.name: str = name
         self.items: dict[str, dict[str, str | int]] = self.get_items(os.path.join('input', data + '.json'))
         self.prefix: str = prefix
+        self.folder: str = folder
 
     def generate(self):
         """
@@ -26,9 +28,7 @@ class MenuBuilder:
         for page in self.build_all_pages():
             index += 1
             with open(os.path.join('output',
-                                   f'{self.prefix}.yml'
-                                           .replace('%page%', str(index))
-                                           .replace('%pages%', str(len(self.items)))
+                                   f'{self.prefix}.yml'.replace('%page%', str(index))
                                    ), 'w', encoding='utf-8') as file:
                 file.write(yaml.dump(page, allow_unicode=True))
 
