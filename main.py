@@ -16,6 +16,7 @@ def recreate_output():
 
 def main():
     recreate_output()
+
     MenuBuilder('Строительные блоки. %page% // %pages%',
                 'building_blocks',
                 'shop_building_blocks%page%',
