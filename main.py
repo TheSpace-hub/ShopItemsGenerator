@@ -6,6 +6,19 @@ import json
 import yaml
 
 
+class Menu:
+    def __init__(self, name: str, data: str, prefix: str):
+        """
+        Создание экземпляра меню
+        :param name: Отображаемое название с заменой %page% на номер страницы.
+        :param data: Файл с данными о блоках.
+        :param prefix: Префикс для файла.
+        """
+        self.name: str = name
+        self.data: str = data
+        self.prefix: str = prefix
+
+
 def get_building_blocks() -> dict[str, dict[str, Any]]:
     with open('blocks.json', 'r', encoding='utf-8') as f:
         return json.loads(f.read())
