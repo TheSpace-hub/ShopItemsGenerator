@@ -37,10 +37,10 @@ class MenuBuilder:
         Собрать все страницы.
         :return: Список из страниц.
         """
-        pages: list[dict] = []
+        pages: list[dict[str, int]] = []
         items: dict = {}
-        for material, value in self.items.items():
-            items[material] = value
+        for material, price in self.items.items():
+            items[material] = price
             if len(items) == 21:
                 pages.append(self.build_page(len(pages) + 1, items))
                 items = {}
@@ -50,7 +50,7 @@ class MenuBuilder:
 
         return pages
 
-    def build_page(self, page: int, items: dict[str, dict[str, str | int]]) -> dict:
+    def build_page(self, page: int, items: dict[str, int]) -> dict:
         """
         Собрать страницу.
         :param page: Номер страницы.
@@ -60,11 +60,9 @@ class MenuBuilder:
         page: dict = self.get_menu_template(page)
 
         index: int = 0
-        for material, value in items.items():
+        for material, price in items.items():
             slot: int = self.get_slot_by_index(index)
-            name: str = str(value['name'])
-            price: int = int(value['price'])
-            page['items'][material] = self.get_item(slot, material, name, price)
+            page['items'][material] = self.get_item(slot, material, price)
             index += 1
 
         return page
@@ -113,23 +111,22 @@ class MenuBuilder:
         }
 
     @classmethod
-    def get_item(cls, slot: int, material: str, name: str, price: int):
+    def get_item(cls, slot: int, material: str, price: int):
         """
         Получить ячейку с предметом.
         :param slot: Слот предмета.
         :param material: Материал.
-        :param name: Отображаемое имя.
         :param price: Цена за предмет.
         :return: Ячейка с предметом.
         """
         return {
             'material': material,
             'amount': 16,
-            'display_name': f'&b{name}',
             'slot': slot,
             'lore': [
-                f'&7Купить ЛКМ за {price}₽',
-                f'&7Продать ПКМ за {ceil(price / 2)}₽'
+                '',
+                f'&a ▸ Купить ЛКМ за &f{price}₽',
+                f'&a ▸ Продать ПКМ за &f{ceil(price / 2)}₽'
             ],
             'left_click_commands': [
                 f'[console] give %player_name% {material} 16',
