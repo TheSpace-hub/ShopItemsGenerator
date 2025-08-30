@@ -1,4 +1,5 @@
 import json
+import os.path
 from math import ceil
 
 import yaml
@@ -9,11 +10,11 @@ class MenuBuilder:
         """
         Создание экземпляра меню
         :param name: Отображаемое название с заменой %page% на номер страницы, а %pages% на кол-во страниц.
-        :param data: Путь до файла с параметрами.
+        :param data: Имя файла с параметрами.
         :param prefix: Префикс для файла с заменой %page% на номер страницы.
         """
         self.name: str = name
-        self.items: dict[str, dict[str, str | int]] = self.get_items(data)
+        self.items: dict[str, dict[str, str | int]] = self.get_items(os.path.join('input', data + '.json'))
         self.prefix: str = prefix
 
     def generate(self):
@@ -21,8 +22,14 @@ class MenuBuilder:
         Сгенерировать файлы меню.
         :return:
         """
+        index: int = 0
         for page in self.build_all_pages():
-            with open(f'{self.prefix}.yml'.replace('%page%', str(page)), 'w', encoding='utf-8') as file:
+            index += 1
+            with open(os.path.join('output',
+                                   f'{self.prefix}.yml'
+                                           .replace('%page%', str(index))
+                                           .replace('%pages%', str(len(self.items)))
+                                   ), 'w', encoding='utf-8') as file:
                 file.write(yaml.dump(page, allow_unicode=True))
 
     def build_all_pages(self) -> list[dict]:
@@ -164,7 +171,7 @@ class MenuBuilder:
 
 
 def main():
-    MenuBuilder('Строительные блоки. %page% // %pages%', 'blocks.json', 'building_blocks').generate()
+    MenuBuilder('Строительные блоки. %page% // %pages%', 'blocks', 'shop_building_blocks_%page%').generate()
 
 
 if __name__ == '__main__':
