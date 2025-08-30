@@ -11,11 +11,33 @@ def get_building_blocks() -> dict[str, dict[str, Any]]:
         return json.loads(f.read())
 
 
-def get_menu_template(menu_index: int) -> dict:
+def get_menu_template(menu_index: int, pages: int) -> dict:
     return {
         'size': 45,
-        'menu_title': f'Магазин строительных блоков // Страница {menu_index}',
-        'items': {}
+        'menu_title': f'Магазин СБ // Страница {menu_index}',
+        'items': {
+            'arrow_back': {
+                'display_name': '&bВернуться в магазин',
+                'left_click_commands': ['[openguimenu] shop'],
+                'material': 'basehead-eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjZlMTRmMmI3ZDFmNWNiNmY1NmFiM2U2ODgxZmM4NDkwZWRhNmZmMmQxZDQ4YTMyNDFkMTQ3MjIzY2IzIn19fQ==',
+                'slot': 0
+            },
+            'arrow_next': {
+                'display_name': '&bВернуться в магазин',
+                'left_click_commands': [
+                    f'[openguimenu] shop_building_blocks_{menu_index + 1 if menu_index + 1 <= pages else 1}'],
+                'material': 'basehead-eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDJiMGMwN2ZhMGU4OTIzN2Q2NzllMTMxMTZiNWFhNzVhZWJiMzRlOWM5NjhjNmJhZGIyNTFlMTI3YmRkNWIxIn19fQ==',
+                'slot': 26
+            },
+            'arrow_prev': {
+                'display_name': '&bВернуться в магазин',
+                'left_click_commands': [
+                    f'[openguimenu] shop_building_blocks_{menu_index - 1 if menu_index - 1 >= 1 else pages}'],
+                'material': 'basehead-eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDU5YmUxNTU3MjAxYzdmZjFhMGIzNjk2ZDE5ZWFiNDEwNDg4MGQ2YTljZGI0ZDVmYTIxYjZkYWE5ZGIyZDEifX19',
+                'slot': 18
+            },
+
+        }
     }
 
 
@@ -23,9 +45,13 @@ def main():
     slot = 10
     menu_index = 1
 
-    menu: dict = get_menu_template(menu_index)
+    blocks = get_building_blocks()
 
-    for material, value in get_building_blocks().items():
+    print(ceil(len(blocks) / 21))
+
+    menu: dict = get_menu_template(menu_index, ceil(len(blocks) / 21))
+
+    for material, value in blocks.items():
         name: str = value['name']
         price: int = value['price'] * 16
         menu['items'][material] = {
@@ -75,7 +101,7 @@ def main():
                 file.write(yaml.dump(menu, allow_unicode=True))
             menu_index += 1
             slot = 10
-            menu: dict = get_menu_template(menu_index)
+            menu: dict = get_menu_template(menu_index, ceil(len(blocks) / 21))
     with open(f'shop_building_blocks_{menu_index}.yml', 'w', encoding='utf-8') as file:
         file.write(yaml.dump(menu, allow_unicode=True))
 
