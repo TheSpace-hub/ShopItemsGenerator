@@ -25,9 +25,13 @@ class MenuBuilder:
         :return:
         """
         index: int = 0
+
+        if not os.path.exists(os.path.join('output', self.folder)):
+            os.mkdir(os.path.join('output', self.folder))
+
         for page in self.build_all_pages():
             index += 1
-            with open(os.path.join('output',
+            with open(os.path.join('output', self.folder,
                                    f'{self.prefix}.yml'.replace('%page%', str(index))
                                    ), 'w', encoding='utf-8') as file:
                 file.write(yaml.dump(page, allow_unicode=True))
