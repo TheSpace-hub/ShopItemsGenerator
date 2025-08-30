@@ -44,6 +44,10 @@ class MenuBuilder:
             if len(items) == 21:
                 pages.append(self.build_page(len(pages) + 1, items))
                 items = {}
+
+        if len(items) > 0:
+            pages.append(self.build_page(len(pages) + 1, items))
+
         return pages
 
     def build_page(self, page: int, items: dict[str, dict[str, str | int]]) -> dict:
