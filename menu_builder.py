@@ -83,7 +83,7 @@ class MenuBuilder:
         pages: int = ceil(len(self.items) / 21)
         return {
             'size': 45,
-            'menu_title': self.name.replace('%page%', str(page)),
+            'menu_title': self.name.replace('%page%', str(page)).replace('%pages%', str(pages)),
             'items': {
                 'arrow_back': {
                     'display_name': '&bВернуться в магазин',
